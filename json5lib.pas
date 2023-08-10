@@ -41,7 +41,7 @@ type
     function IsWhitespace(c: Char): Boolean;
     function ParseValue: TJSON5Value;
     function ParseString: TJSON5Value;
-    function ParseNumber: Double;
+    function ParseNumber: TJSON5Value;
     function ParseObject: TDictionary<string, TJSON5Value>;
     function ParseArray: TArray<TJSON5Value>;
     procedure SkipWhitespace;
@@ -283,9 +283,10 @@ begin
 end;
 
 
-function TJSON5Parser.ParseNumber: Double;
+function TJSON5Parser.ParseNumber: TJSON5Value;
 var
   NumberStr: string;
+  NumberValue: Double;
 begin
   FBuffer.Clear;
 
@@ -312,8 +313,8 @@ begin
       end;
 
       NumberStr := FBuffer.ToString;
-      Result := StrToFloat('$' + NumberStr); // Convert hexadecimal string to floating-point
-      Exit;
+      NumberValue := StrToFloat('$' + NumberStr); // Convert hexadecimal string to floating-point
+      Exit(TJSON5Value.CreateNumber(NumberValue));
     end;
   end;
 
@@ -354,8 +355,10 @@ begin
   end;
 
   NumberStr := FBuffer.ToString;
-  Result := StrToFloat(NumberStr); // Convert decimal string to floating-point
+  NumberValue := StrToFloat(NumberStr); // Convert decimal string to floating-point
+  Result := TJSON5Value.CreateNumber(NumberValue);
 end;
+
 
 
   if FCurrentChar in ['e', 'E'] then
