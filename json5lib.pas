@@ -189,11 +189,33 @@ var
   NumberStr: string;
 begin
   FBuffer.Clear;
-  
+
   if FCurrentChar = '-' then
   begin
     FBuffer.Append('-');
     FCurrentChar := ReadChar;
+  end;
+
+  if FCurrentChar = '0' then
+  begin
+    FBuffer.Append(FCurrentChar);
+    FCurrentChar := ReadChar;
+
+    if CharInSet(FCurrentChar, ['x', 'X']) then
+    begin
+      FBuffer.Append(FCurrentChar);
+      FCurrentChar := ReadChar;
+
+      while CharInSet(FCurrentChar, ['0'..'9', 'a'..'f', 'A'..'F']) do
+      begin
+        FBuffer.Append(FCurrentChar);
+        FCurrentChar := ReadChar;
+      end;
+
+      NumberStr := FBuffer.ToString;
+      Result := StrToFloat('$' + NumberStr); // Convert hexadecimal string to floating-point
+      Exit;
+    end;
   end;
 
   while FCurrentChar in ['0'..'9'] do
@@ -213,6 +235,29 @@ begin
       FCurrentChar := ReadChar;
     end;
   end;
+
+  if FCurrentChar in ['e', 'E'] then
+  begin
+    FBuffer.Append(FCurrentChar);
+    FCurrentChar := ReadChar;
+
+    if FCurrentChar in ['+', '-'] then
+    begin
+      FBuffer.Append(FCurrentChar);
+      FCurrentChar := ReadChar;
+    end;
+
+    while FCurrentChar in ['0'..'9'] do
+    begin
+      FBuffer.Append(FCurrentChar);
+      FCurrentChar := ReadChar;
+    end;
+  end;
+
+  NumberStr := FBuffer.ToString;
+  Result := StrToFloat(NumberStr); // Convert decimal string to floating-point
+end;
+
 
   if FCurrentChar in ['e', 'E'] then
   begin
