@@ -40,7 +40,7 @@ type
     function PeekChar: Char;
     function IsWhitespace(c: Char): Boolean;
     function ParseValue: TJSON5Value;
-    function ParseString: string;
+    function ParseString: TJSON5Value;
     function ParseNumber: Double;
     function ParseObject: TDictionary<string, TJSON5Value>;
     function ParseArray: TArray<TJSON5Value>;
@@ -235,7 +235,9 @@ begin
   SkipComments;
 end;
 
-function TJSON5Parser.ParseString: string;
+function TJSON5Parser.ParseString: TJSON5Value;
+var
+  ValueStr: string;
 begin
   FBuffer.Clear;
   FCurrentChar := ReadChar; // Consume opening double quote
@@ -272,11 +274,12 @@ begin
       else
         FBuffer.Append(FCurrentChar);
     end;
-    
+
     FCurrentChar := ReadChar;
   end;
 
-  Result := FBuffer.ToString;
+  ValueStr := FBuffer.ToString;
+  Result := TJSON5Value.CreateString(ValueStr);
 end;
 
 
