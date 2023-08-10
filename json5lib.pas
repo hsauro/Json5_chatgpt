@@ -6,9 +6,106 @@ uses
   System.SysUtils, System.Classes, System.Generics.Collections;
 
 type
+type
+  TJSON5ValueType = (jvString, jvNumber, jvObject, jvArray, jvBoolean, jvNull);
+
   TJSON5Value = class
-    // Define properties and methods for various value types (string, number, object, array, etc.)
+  private
+    FValueType: TJSON5ValueType;
+    FStringValue: string;
+    FNumberValue: Double;
+    FObjectValue: TDictionary<string, TJSON5Value>;
+    FArrayValue: TArray<TJSON5Value>;
+  public
+    constructor CreateString(const Value: string);
+    constructor CreateNumber(const Value: Double);
+    constructor CreateObject;
+    constructor CreateArray;
+    function GetType: TJSON5ValueType;
+    function ToString: string; override;
+
+    // Additional methods to interact with specific value types
+    function GetStringValue: string;
+    function GetNumberValue: Double;
+    function GetObjectValue: TDictionary<string, TJSON5Value>;
+    function GetArrayValue: TArray<TJSON5Value>;
   end;
+
+// ...
+
+constructor TJSON5Value.CreateString(const Value: string);
+begin
+  FValueType := jvString;
+  FStringValue := Value;
+end;
+
+constructor TJSON5Value.CreateNumber(const Value: Double);
+begin
+  FValueType := jvNumber;
+  FNumberValue := Value;
+end;
+
+constructor TJSON5Value.CreateObject;
+begin
+  FValueType := jvObject;
+  FObjectValue := TDictionary<string, TJSON5Value>.Create;
+end;
+
+constructor TJSON5Value.CreateArray;
+begin
+  FValueType := jvArray;
+  FArrayValue := [];
+end;
+
+function TJSON5Value.GetType: TJSON5ValueType;
+begin
+  Result := FValueType;
+end;
+
+function TJSON5Value.ToString: string;
+begin
+  case FValueType of
+    jvString: Result := '"' + FStringValue + '"';
+    jvNumber: Result := FloatToStr(FNumberValue);
+    jvObject: Result := ''; // Implement object serialization here
+    jvArray: Result := '';  // Implement array serialization here
+    jvBoolean: Result := ''; // Implement boolean serialization here
+    jvNull: Result := 'null';
+  end;
+end;
+
+function TJSON5Value.GetStringValue: string;
+begin
+  if FValueType = jvString then
+    Result := FStringValue
+  else
+    raise Exception.Create('Value is not a string');
+end;
+
+function TJSON5Value.GetNumberValue: Double;
+begin
+  if FValueType = jvNumber then
+    Result := FNumberValue
+  else
+    raise Exception.Create('Value is not a number');
+end;
+
+function TJSON5Value.GetObjectValue: TDictionary<string, TJSON5Value>;
+begin
+  if FValueType = jvObject then
+    Result := FObjectValue
+  else
+    raise Exception.Create('Value is not an object');
+end;
+
+function TJSON5Value.GetArrayValue: TArray<TJSON5Value>;
+begin
+  if FValueType = jvArray then
+    Result := FArrayValue
+  else
+    raise Exception.Create('Value is not an array');
+end;
+
 
   TJSON5Parser = class
   private
