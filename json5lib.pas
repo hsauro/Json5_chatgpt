@@ -1,4 +1,4 @@
-unit JSON5Parser;
+unit json5lib;
 
 interface
 
