@@ -31,6 +31,29 @@ type
     function GetArrayValue: TArray<TJSON5Value>;
   end;
 
+  TJSON5Parser = class
+  private
+    FStream: TStream;
+    FBuffer: TStringBuilder;
+    FCurrentChar: Char;
+    function ReadChar: Char;
+    function PeekChar: Char;
+    function IsWhitespace(c: Char): Boolean;
+    function ParseValue: TJSON5Value;
+    function ParseString: string;
+    function ParseNumber: Double;
+    function ParseObject: TDictionary<string, TJSON5Value>;
+    function ParseArray: TArray<TJSON5Value>;
+    procedure SkipWhitespace;
+    procedure SkipComments;
+  public
+    constructor Create(Stream: TStream);
+    destructor Destroy; override;
+    function Parse: TJSON5Value;
+  end;
+
+implementation
+
 // ...
 
 constructor TJSON5Value.CreateString(const Value: string);
@@ -105,30 +128,6 @@ begin
   else
     raise Exception.Create('Value is not an array');
 end;
-
-
-  TJSON5Parser = class
-  private
-    FStream: TStream;
-    FBuffer: TStringBuilder;
-    FCurrentChar: Char;
-    function ReadChar: Char;
-    function PeekChar: Char;
-    function IsWhitespace(c: Char): Boolean;
-    function ParseValue: TJSON5Value;
-    function ParseString: string;
-    function ParseNumber: Double;
-    function ParseObject: TDictionary<string, TJSON5Value>;
-    function ParseArray: TArray<TJSON5Value>;
-    procedure SkipWhitespace;
-    procedure SkipComments;
-  public
-    constructor Create(Stream: TStream);
-    destructor Destroy; override;
-    function Parse: TJSON5Value;
-  end;
-
-implementation
 
 constructor TJSON5Parser.Create(Stream: TStream);
 begin
